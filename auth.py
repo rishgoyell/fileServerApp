@@ -33,7 +33,7 @@ def login(user, passwd):
         creds = entry.split(' ')
         if creds[0] == user and creds[1] == pwd:
             return "Login Successful\n"
-        entry = f.readline()
+        entry = f.readline().strip('\n')
 
     f.close()
     return "Invalid Credentials!!"
@@ -49,4 +49,3 @@ def loginTest():
     a = raw_input("User: ")
     b = raw_input("Pass: ")
     print login(a,b)
-

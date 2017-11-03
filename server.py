@@ -83,13 +83,13 @@ def get_next_action(curruser):
       raise e
    if option == '0':
       try:
-         clientsocket.mysend('Enter \n[0] HELP \n[1] List Files\n[2] Write File\n[3] Read File\n[4] Delete File\n[5] Exit\n')
+         clientsocket.mysend('Enter \n[0] HELP \n[1] List All Files\n[2] Write File\n[3] Read File \n[4] Delete File\n[5] Give Access\n[6] Revoke Access\n[7] Files Shared with Others\n[8] Exit\n')
       except Exception as e:
          raise e
       return True
    if option == '1':
       try:
-         clientsocket.mysend(curruser.ls())
+         clientsocket.mysend(curruser.ls()+'\nShared Files: \n'+curruser.shared_to_me())
       except Exception as e:
          raise e
       return True
@@ -126,6 +126,8 @@ def get_next_action(curruser):
       except Exception as e:
          raise e
       filedata = curruser.readfile(filename)
+      if "File doesn't exist!!\n" == filedata:
+         filedata = curruser.shared_read(filename)
       try:
          clientsocket.mysend(filedata)
       except Exception as e:
@@ -147,14 +149,49 @@ def get_next_action(curruser):
       except Exception as e:
          raise e
       return True
-
    if option == '5':
+      try:
+         clientsocket.mysend("Enter Filename:Username\n")
+      except Exception as e:
+         raise e
+      try:
+         l = clientsocket.myreceive().strip('\n').split(':')
+      except Exception as e:
+         raise e
+      msg = curruser.shareit(l[0],l[1])
+      try:
+         clientsocket.mysend(msg)
+      except Exception as e:
+         raise e
+   if option == '6':
+      try:
+         clientsocket.mysend("Enter Filename:Username\n")
+      except Exception as e:
+         raise e
+      try:
+         l = clientsocket.myreceive().strip('\n').split(':')
+      except Exception as e:
+         raise e
+      msg = curruser.takeback(l[0],l[1])
+      try:
+         clientsocket.mysend(msg)
+      except Exception as e:
+         raise e
+
+   if option == '7':
+      try:
+         clientsocket.mysend(curruser.i_shared())
+      except Exception as e:
+         raise e
+
+   if option == '8':
       try:
          clientsocket.mysend("Closing Connection...\n")
       except Exception as e:
          raise e
 
       return False
+   return True
 
 class mysocket(object):
 
