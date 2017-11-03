@@ -20,16 +20,18 @@ def signup(user, passwd, pass_repeat):
         os.makedirs(user)
         f = open(user + '/.shared', 'w+')
         f.close()
+        f = open(user + '/.shared_with_me', 'w+')
+        f.close()
         return "Registration Successful!!\n"
 
 
 def login(user, passwd):
     pwd = hashlib.md5(passwd).hexdigest()
     f = open('cred.txt', 'a+')
-    entry = f.readline()
+    entry = f.readline().strip('\n')
     while entry != "":
         creds = entry.split(' ')
-        if creds[0] == user and creds[1][:-1] == pwd:
+        if creds[0] == user and creds[1] == pwd:
             return "Login Successful\n"
         entry = f.readline()
 
