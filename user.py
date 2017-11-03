@@ -20,7 +20,7 @@ class user:
             return ("Invalid Credentials!!\n")
         else:
             logged_in = True
-            path = self.name + '/'
+            self.path = self.name + '/'
             return ("Login Successful!!\n")
 
     def ls(self):
@@ -28,11 +28,18 @@ class user:
         flist = "\n".join(files)
         return (flist)
 
+    def what_shared(self):
+        f = open(self.path + ".shared", "r")
+        slist = f.read()
+        f.close()
+        return slist
+
     def readfile(self, filename):
         if os.path.isfile(self.path + filename):
             f = open(self.path + filename, "r")
-            return (f.read())
+            data = f.read()
             f.close()
+            return (data)
         else:
             return ("File doesn't exist!!\n")
 
