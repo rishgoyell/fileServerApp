@@ -1,4 +1,5 @@
 import hashlib
+import os
 
 def signup(user, passwd, pass_repeat):
     if passwd != pass_repeat:
@@ -16,6 +17,7 @@ def signup(user, passwd, pass_repeat):
 
         f.write(user + " " + hashlib.md5(passwd).hexdigest() + "\n")
         f.close()
+        os.makedirs(user)
         return "Registration Successful!!\n"
 
 
@@ -31,4 +33,16 @@ def login(user, passwd):
 
     f.close()
     return "Invalid Credentials!!"
+
+
+def signupTest():
+    a = raw_input("User: ")
+    b = raw_input("Pass: ")
+    c = raw_input("Pass again: ")
+    print signup(a,b,c)
+
+def loginTest():
+    a = raw_input("User: ")
+    b = raw_input("Pass: ")
+    print login(a,b)
 
