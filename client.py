@@ -101,13 +101,18 @@ while True:
 			print s.myreceive()
 			s.mysend(filedata)
 		else:
+			s.mysend("#####----#####")
 			print "File doesn't exist!!\n"
 	elif option == '3':
 		filename = raw_input()
 		s.mysend(filename)
 		filedata = s.myreceive()
-		with open(filename, 'w') as outfile:
-			outfile.write(filedata)
+		if "File doesn't exist!!\n" == filedata:
+			print filedata
+		else:
+			with open(filename, 'w') as outfile:
+				outfile.write(filedata)
+			print("File Transferred!!")
 
 	elif option == '4':
 		filename = raw_input()
