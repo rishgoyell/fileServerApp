@@ -103,6 +103,8 @@ def get_next_action(curruser):
          filename = clientsocket.myreceive()
       except Exception as e:
          raise e
+      if filename =='#####----#####':
+         return True
       try:
          clientsocket.mysend("Transferring File............\n")
       except Exception as e:
@@ -151,6 +153,7 @@ def get_next_action(curruser):
          clientsocket.mysend("Closing Connection...\n")
       except Exception as e:
          raise e
+
       return False
 
 class mysocket(object):
