@@ -14,15 +14,12 @@ def get_option(clientsocket):
       option = clientsocket.myreceive()
    except Exception as e:
       raise e
-   while option not in ['1','2']:
-      try:
-         clientsocket.send('Option Not Valid: Please enter \'1\' or \'2\'')
-      except Exception as e:
-         raise e
-      try:
-         option = clientsocket.myreceive()
-      except Exception as e:
-         raise e
+   # while option not in ['1','2']:
+      
+   #    try:
+   #       option = clientsocket.myreceive()
+   #    except Exception as e:
+   #       raise e
    return option
 
 
@@ -46,43 +43,106 @@ def sign_in(clientsocket):
    login_message = curruser.login()
    clientsocket.mysend(login_message)
    if 'Successful' in login_message:
-      return True
+      return curruser
    else:
       return False
 
 
-      # sign = auth.signup(l[0], l[1], l[2])
-      # try:
-      #    clientsocket.mysend(sign)
-      # except Exception as e:
-      #    raise e
-      # return 1
+def sign_up(clientsocket):
+   try:
+      clientsocket.mysend('Enter Username:Password:Password\n')
+   except Exception as e:
+      raise e
+   try:
+      creds = clientsocket.myreceive()
+   except Exception as e:
+      raise e
+   if creds.count(':') != 2:
+      clientsocket.mysend('Information not provided in appropriate form\n')
+      return False
 
+   l = creds.strip('\n').split(':')
+   sign = auth.signup(l[0], l[1], l[2])
+   try:
+      clientsocket.mysend(sign)
+   except Exception as e:
+      raise e
+   if 'Successful' in sign:
+      return True
+   else:
+      return False
 
-def sign_up():
-   return True
+def get_next_action(curruser):
+   try:
+      clientsocket.mysend('Enter [1] List Files\n[2] Write File\n[3] Read File\n[4] Delete File\n[5] Exit')
+   except Exception as e:
+      raise e
+   try:
+      option = clientsocket.myreceive()
+   except Exception as e:
+      raise e
 
-   # elif option == '2':
-   #    try:
-   #       clientsocket.mysend('Send the credentials')
-   #    except Exception as e:
-   #       flag = 0
-   #       print "connection broke"
-   #       break;
-   #    try:
-   #       creds = clientsocket.myreceive()
-   #    except Exception as e:
-   #       raise e
-   #    l = creds.strip('\n').split(':')
-   #    sign = auth.login(l[0], l[1])
-   #    try:
-   #       clientsocket.mysend(sign)
-   #    except Exception as e:
-   #       raise e
-   #    return 2
-   # else :
-   #    clientsocket.mysend('option not recognized: Please send 1 or 2')
-   #    return 0
+   if option == '1':
+      try:
+         clientsocket.mysend(curruser.ls())
+      except Exception as e:
+         raise e
+      return True
+         
+   if option == '2':
+      try:
+         clientsocket.mysend("Enter File Name\n")
+      except Exception as e:
+         raise e
+      try:
+         filename = clientsocket.myreceive()
+      except Exception as e:
+         raise e
+      try:
+         clientsocket.mysend("Transferring File............\n")
+      except Exception as e:
+         raise e
+      try:
+         filedata = clientsocket.myreceive()
+      except Exception as e:
+         raise e
+      curruser.writefile(filename, filedata)
+      return True
+
+   if option == '3':
+      try:
+         clientsocket.mysend("Enter File Name\n")
+      except Exception as e:
+         raise e
+      try:
+         filename = clientsocket.myreceive()
+      except Exception as e:
+         raise e
+      filedata = curruser.readfile(filename)
+      try:
+         clientsocket.mysend(filedata)
+      except Exception as e:
+         raise e
+      return True
+      
+   if option == '4':
+      try:
+         clientsocket.mysend("Enter File Name\n")
+      except Exception as e:
+         raise e
+      try:
+         filename = clientsocket.myreceive()
+      except Exception as e:
+         raise e
+      delete_msg = curruser.deletefile(filename)
+      try:
+         clientsocket.mysend(delete_msg)
+      except Exception as e:
+         raise e
+      return True
+
+   if option == '5':
+      return False
 
 class mysocket(object):
 
@@ -90,6 +150,7 @@ class mysocket(object):
       if sock is None:
          self.sock = socket.socket(
           socket.AF_INET, socket.SOCK_STREAM)
+         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       else:
          self.sock = sock
 
@@ -126,7 +187,7 @@ class mysocket(object):
       while totalsent < MSGLEN+10:
          sent = self.sock.send(msg[totalsent:])
          if sent == 0:
-            raise RuntimeError("socket connection broken")
+            raise RuntimeError("socket connection broken\n")
          totalsent = totalsent + sent
 
    def myreceive(self):
@@ -163,27 +224,26 @@ while True:
       sys.exit()
    elif newpid==0 :
       flag = 1
+      # while True:
       while True:
-         while True:
-            option = get_option(clientsocket)
+         option = get_option(clientsocket)
 
-            if option == '1':
-               if sign_up():
-                  break
-               else:
-                  continue
-            if option == '2':
-               print "send credentials!!"
-               if sign_in(clientsocket):
-                  break
-               else:
-                  continue
+         if option == '1':
+            sign_up(clientsocket)
+               
+         if option == '2':
+            curruser = sign_in(clientsocket)
+            if curruser:
+               break
+            else:
+               continue
 
+      while get_next_action(curruser):
+         continue
 
-      if not flag :
-         break
+      del(curruser)
+
+      clientsocket.close()
       break
    else:
       clientsocket.close()
-
-serversocket.close()
