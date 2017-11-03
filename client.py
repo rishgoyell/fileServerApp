@@ -1,5 +1,5 @@
 import socket               
- 
+import os
 class mysocket(object):
 
 	def __init__(self, sock=None):
@@ -78,11 +78,11 @@ while True:
 		break
 
 while True:
-	option = 0
+	option = -1
 	option_msg = s.myreceive()
-	while option not in ['1','2', '3', '4', '5']:
+	while option not in ['0','1','2', '3', '4', '5']:
 		option = raw_input(option_msg)
-		if option not in ['1','2', '3', '4', '5']:
+		if option not in ['0','1','2', '3', '4', '5']:
 			print "Error: Enter valid option"
 	s.mysend(option)
 	try:
@@ -90,8 +90,6 @@ while True:
 		print msg
 	except Exception as e:
 		raise e
-	if option == '1':
-		continue
 
 	if option == '2':
 		filename = raw_input()
@@ -100,22 +98,25 @@ while True:
 			filedata = f.read()
 			f.close()
 			s.mysend(os.path.basename(filename))
+			print s.myreceive()
+			s.mysend(filedata)
 		else:
 			print "File doesn't exist!!\n"
-	if option == '3':
+	elif option == '3':
 		filename = raw_input()
 		s.mysend(filename)
 		filedata = s.myreceive()
 		with open(filename, 'w') as outfile:
 			outfile.write(filedata)
 
-	if option == '4':
+	elif option == '4':
 		filename = raw_input()
 		s.mysend(filename)
 		print s.myreceive()
 
-	if option == '5':
+	elif option == '5':
 		break
+		s.close()
 
-		
-s.close()       
+s.close()
+       
