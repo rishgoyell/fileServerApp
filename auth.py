@@ -18,6 +18,8 @@ def signup(user, passwd, pass_repeat):
         f.write(user + " " + hashlib.md5(passwd).hexdigest() + "\n")
         f.close()
         os.makedirs(user)
+        f = open(user + '/.shared', 'w+')
+        f.close()
         return "Registration Successful!!\n"
 
 
