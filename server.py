@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import auth
-from user import user
+import user
 
 def get_option(clientsocket):
    try:
@@ -27,13 +27,15 @@ def get_option(clientsocket):
 
 
 def sign_in(clientsocket):
-   curruser = user(clientsocket)
+   curruser = user.user(clientsocket)
    try:
       clientsocket.mysend('Enter Username:Password')
    except Exception as e:
       raise e
    try:
+      # print "accepting creds"
       creds = clientsocket.myreceive()
+      # print "accepted creds"
    except Exception as e:
       raise e
 
@@ -43,16 +45,20 @@ def sign_in(clientsocket):
 
    l = creds.strip('\n').split(':')
    curruser.update_cred(l[0],l[1])
-   curruser.login()
-   return True
+   login_message = curruser.login()
+   clientsocket.mysend(login_message)
+   if 'Successful' in login_message:
+      return True
+   else:
+      return False
 
 
-      sign = auth.signup(l[0], l[1], l[2])
-      try:
-         clientsocket.mysend(sign)
-      except Exception as e:
-         raise e
-      return 1
+      # sign = auth.signup(l[0], l[1], l[2])
+      # try:
+      #    clientsocket.mysend(sign)
+      # except Exception as e:
+      #    raise e
+      # return 1
 
 
 def sign_up():
@@ -160,61 +166,17 @@ while True:
    elif newpid==0 :
       flag = 1
       while True:
-         # try:
-         #    clientsocket.mysend('[1] Sign Up \n[2] Sign In\n')
-         # except Exception as e:
-         #    raise e
-         # try:
-         #    option = clientsocket.myreceive()
-         # except Exception as e:
-         #    raise e
-         # if option == '1':
-         #    try:
-         #       clientsocket.mysend('Send the credentials')
-         #    except Exception as e:
-         #       flag = 0
-         #       print "connection broke"
-         #       break;
-         #    try:
-         #       creds = clientsocket.myreceive()
-         #    except Exception as e:
-         #       raise e
-         #    l = creds.strip('\n').split(':')
-         #    sign = auth.signup(l[0], l[1], l[2])
-         #    try:
-         #       clientsocket.mysend(sign)
-         #    except Exception as e:
-         #       raise e
-         # elif option == '2':
-         #    try:
-         #       clientsocket.mysend('Send the credentials')
-         #    except Exception as e:
-         #       flag = 0
-         #       print "connection broke"
-         #       break;
-         #    try:
-         #       creds = clientsocket.myreceive()
-         #    except Exception as e:
-         #       raise e
-         #    l = creds.strip('\n').split(':')
-         #    sign = auth.login(l[0], l[1])
-         #    try:
-         #       clientsocket.mysend(sign)
-         #    except Exception as e:
-         #       raise e
-         # else :
-         #    clientsocket.mysend('option not recognized: Please send 1 or 2')
-         #    clientsocket.close()
 
          while True:
-            option = get_option(clientsocke)
+            option = get_option(clientsocket)
             if option == '1':
                if sign_up():
                   break
                else:
                   continue
             if option == '2':
-               if sign_in():
+               print "send credentials!!"
+               if sign_in(clientsocket):
                   break
                else:
                   continue
@@ -222,6 +184,8 @@ while True:
 
       if not flag :
          break
+      break
    else:
       clientsocket.close()
 
+serversocket.close()
