@@ -26,7 +26,7 @@ def get_option(clientsocket):
 def sign_in(clientsocket):
    curruser = user.user(clientsocket)
    try:
-      clientsocket.mysend('Enter Username:Password')
+      clientsocket.mysend('Enter Username:Password\n')
    except Exception as e:
       raise e
    try:
@@ -35,7 +35,7 @@ def sign_in(clientsocket):
       raise e
 
    if creds.count(':') != 1:
-      clientsocket.mysend('Information not provided in appropriate form')
+      clientsocket.mysend('Information not provided in appropriate form\n')
       return False
 
    l = creds.strip('\n').split(':')
@@ -74,17 +74,22 @@ def sign_up(clientsocket):
 
 def get_next_action(curruser):
    try:
-      clientsocket.mysend('Enter [1] List Files\n[2] Write File\n[3] Read File\n[4] Delete File\n[5] Exit')
+      clientsocket.mysend('Enter Desired Option or [0] for HELP\n')
    except Exception as e:
       raise e
    try:
       option = clientsocket.myreceive()
    except Exception as e:
       raise e
-
+   if option == '0':
+      try:
+         clientsocket.mysend('Enter \n[0] HELP \n[1] List All Files\n[2] Write File\n[3] Read File \n[4] Delete File\n[5] Give Access\n[6] Revoke Access\n[7] Files Shared with Others\n[8] Exit\n')
+      except Exception as e:
+         raise e
+      return True
    if option == '1':
       try:
-         clientsocket.mysend(curruser.ls())
+         clientsocket.mysend(curruser.ls()+'\nShared Files: \n'+curruser.shared_to_me())
       except Exception as e:
          raise e
       return True
@@ -98,6 +103,8 @@ def get_next_action(curruser):
          filename = clientsocket.myreceive()
       except Exception as e:
          raise e
+      if filename =='#####----#####':
+         return True
       try:
          clientsocket.mysend("Transferring File............\n")
       except Exception as e:
@@ -119,6 +126,8 @@ def get_next_action(curruser):
       except Exception as e:
          raise e
       filedata = curruser.readfile(filename)
+      if "File doesn't exist!!\n" == filedata:
+         filedata = curruser.shared_read(filename)
       try:
          clientsocket.mysend(filedata)
       except Exception as e:
@@ -140,9 +149,49 @@ def get_next_action(curruser):
       except Exception as e:
          raise e
       return True
-
    if option == '5':
+      try:
+         clientsocket.mysend("Enter Filename:Username\n")
+      except Exception as e:
+         raise e
+      try:
+         l = clientsocket.myreceive().strip('\n').split(':')
+      except Exception as e:
+         raise e
+      msg = curruser.shareit(l[0],l[1])
+      try:
+         clientsocket.mysend(msg)
+      except Exception as e:
+         raise e
+   if option == '6':
+      try:
+         clientsocket.mysend("Enter Filename:Username\n")
+      except Exception as e:
+         raise e
+      try:
+         l = clientsocket.myreceive().strip('\n').split(':')
+      except Exception as e:
+         raise e
+      msg = curruser.takeback(l[0],l[1])
+      try:
+         clientsocket.mysend(msg)
+      except Exception as e:
+         raise e
+
+   if option == '7':
+      try:
+         clientsocket.mysend(curruser.i_shared())
+      except Exception as e:
+         raise e
+
+   if option == '8':
+      try:
+         clientsocket.mysend("Closing Connection...\n")
+      except Exception as e:
+         raise e
+
       return False
+   return True
 
 class mysocket(object):
 
@@ -197,7 +246,7 @@ class mysocket(object):
       while bytes_recd < MSGLEN:
          chunk = self.sock.recv(min(MSGLEN - bytes_recd, 2048))
          if chunk == '':
-            raise RuntimeError("socket connection broken")
+            raise RuntimeError("socket connection broken\n")
          chunks.append(chunk)
          bytes_recd = bytes_recd + len(chunk)
       return ''.join(chunks)

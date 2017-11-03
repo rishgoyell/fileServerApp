@@ -17,16 +17,16 @@ class user:
     def login(self):
         if "Invalid" in auth.login(self.name, self.pwd):
             del self
-            return ("Invalid Credentials!!\n")
+            return "Invalid Credentials!!\n"
         else:
             logged_in = True
             self.path = self.name + '/'
-            return ("Login Successful!!\n")
+            return "Login Successful!!\n"
 
     def ls(self):
-        files = filter( lambda f: not f.startswith('.'), os.listdir('.'))
+        files = filter( lambda f: not f.startswith('.'), os.listdir(self.path))
         flist = "\n".join(files)
-        return (flist)
+        return flist
 
     def i_shared(self):
         f = open(self.path + ".shared", "r")
@@ -52,7 +52,7 @@ class user:
                     break
                 entry = f.readline()
             f.close()
-            if !found:
+            if not found :
                 return "User doesn't exist!!\n"
             f = open(self.path + ".shared", "a+")
             f.write(filename + " " + who + "\n")
@@ -75,15 +75,15 @@ class user:
                 break
             entry = f.readline()
         f.close()
-        if !found:
+        if not found:
             return "User doesn't exist!!\n"
-        f = open(self.path + ".shared", "w")
+        f = open(self.path + ".shared", "w+")
         lines = f.readlines()
         for line in lines:
             if line != filename + ' ' + who + "\n":
                 f.write(line)
         f.close()
-        f = open(self.path + "../" + who + "/.shared_with_me", "w")
+        f = open(self.path + "../" + who + "/.shared_with_me", "w+")
         lines = f.readlines()
         for line in lines:
             if line != filename + ' ' + self.name + "\n":
@@ -102,23 +102,23 @@ class user:
                 found = True
                 owner = creds[1]
                 break
-            entry = f.readline()
+            entry = f.readline().strip('\n')
         f.close()
-        if !found:
+        if not found:
             return "File is not shared with you!!\n"
-        if os.path.isfile(self.path + '../' + owner + filename):
-            f = open(self.path + '../' + owner + filename, "r")
+        if os.path.isfile(self.path + '../' + owner + '/' + filename):
+            f = open(self.path + '../' + owner + '/' + filename, "r")
             data = f.read()
             f.close()
-            return (data)
+            return data
         else:
-            f = open(self.path + ".shared_with_me", "w")
+            f = open(self.path + ".shared_with_me", "w+")
             lines = f.readlines()
             for line in lines:
                 if line != filename + ' ' + owner + "\n":
                     f.write(line)
             f.close()
-            return ("File doesn't exist!!\n")
+            return "File doesn't exist!!\n"
 
 
 
@@ -127,25 +127,25 @@ class user:
             f = open(self.path + filename, "r")
             data = f.read()
             f.close()
-            return (data)
+            return data
         else:
-            return ("File doesn't exist!!\n")
+            return "File doesn't exist!!\n"
 
     def writefile(self, filename, data):
         if os.path.isfile(self.path + filename):
             i=1
-            while os.path.isfile(self.path + filename + "\ \(" + i +"\)"):
+            while os.path.isfile(self.path + filename + " (" + str(i) +")"):
                 i+=1
-            filename += "\ \(" + i +"\)"
-        f = open(self.path + filename, "w")
+            filename += " (" + str(i) +")"
+        f = open(self.path + filename, "w+")
         f.write(data)
         f.close()
-        return ("File written successfully!!\n")
+        return "File written successfully!!\n"
 
     def deletefile(self, filename):
         if os.path.isfile(self.path + filename):
             os.remove(self.path + filename)
-            f = open(self.path + ".shared", "w")
+            f = open(self.path + ".shared", "w+")
             lines = f.readlines()
             for line in lines:
                 if line.split(' ')[0] != filename:

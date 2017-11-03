@@ -1,5 +1,6 @@
-import socket               
- 
+import socket
+import getpass         
+import os
 class mysocket(object):
 
 	def __init__(self, sock=None):
@@ -69,20 +70,28 @@ while True:
 		if option not in ['1','2']:
 			print "Error: Enter 1 or 2"
 	s.mysend(option)
-
-	creds = raw_input(s.myreceive())
-	s.mysend(creds)
+	if option == '1':
+		s.myreceive()
+		username = raw_input("Username:")
+		password = getpass.getpass("Password:")
+		password_repeat = getpass.getpass("Re-enter Password:")
+		s.mysend(username+':'+password+':'+password_repeat)
+	if option == '2':
+		s.myreceive()
+		username = raw_input("Username:")
+		password = getpass.getpass("Password:")
+		s.mysend(username+':'+password)
 	login_msg = s.myreceive()
 	print login_msg
 	if 'Successful' in login_msg and option == '2':
 		break
 
 while True:
-	option = 0
+	option = -1
 	option_msg = s.myreceive()
-	while option not in ['1','2', '3', '4', '5']:
+	while option not in ['0','1','2', '3', '4', '5','6','7','8']:
 		option = raw_input(option_msg)
-		if option not in ['1','2', '3', '4', '5']:
+		if option not in ['0','1','2', '3', '4', '5','6','7','8']:
 			print "Error: Enter valid option"
 	s.mysend(option)
 	try:
@@ -90,8 +99,6 @@ while True:
 		print msg
 	except Exception as e:
 		raise e
-	if option == '1':
-		continue
 
 	if option == '2':
 		filename = raw_input()
@@ -100,22 +107,45 @@ while True:
 			filedata = f.read()
 			f.close()
 			s.mysend(os.path.basename(filename))
+			print s.myreceive()
+			s.mysend(filedata)
 		else:
+			s.mysend("#####----#####")
 			print "File doesn't exist!!\n"
-	if option == '3':
+	elif option == '3':
 		filename = raw_input()
 		s.mysend(filename)
 		filedata = s.myreceive()
-		with open(filename, 'w') as outfile:
-			outfile.write(filedata)
+		if "File doesn't exist!!\n" == filedata:
+			print filedata
+		else:
+			with open(filename, 'w') as outfile:
+				outfile.write(filedata)
+			print("File Transferred!!")
 
-	if option == '4':
+	elif option == '4':
 		filename = raw_input()
 		s.mysend(filename)
 		print s.myreceive()
 
-	if option == '5':
-		break
+	elif option in ['5','6']:
+		try:
+			l = ''
+			while l.count(':') != 1:
+				l=raw_input()
+				if l.count(':') !=1:
+					print "Follow correct syntax\n"
+			s.mysend(l)
+		except Exception as e:
+			raise e
+		try:
+			print s.myreceive()
+		except Exception as e:
+			raise e
 
-		
-s.close()       
+	elif option == '8':
+		break
+		s.close()
+
+s.close()
+       
