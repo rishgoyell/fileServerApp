@@ -38,21 +38,22 @@ class user:
 
     def writefile(self, filename, data):
         if os.path.isfile(self.path + filename):
-            return ("File already exists, do you want to overwrite?")
-            # overwrite = self.sock.myrecieve()
-            overwrite = overwrite.strip('\n')
-            if overwrite == "yes" or overwrite == "y" or overwrite == "Y" or overwrite == "Yes":
-                f = open(self.path + filename, "w")
-                f.write(data)
-                f.close()
-                return ("File written successfully!!\n")
-            else:
-                return ("Didn't overwrite file\n")
+            i=1
+            while os.path.isfile(self.path + filename + "\ \(" + i +"\)"):
+                i+=1
+            filename += "\ \(" + i +"\)"
+        f = open(self.path + filename, "w")
+        f.write(data)
+        f.close()
+        return ("File written successfully!!\n")
+
+    def deletefile(self, filename):
+        if os.path.isfile(self.path + filename):
+            os.remove(self.path + filename)
+            return "File removed successfully!!\n"
         else:
-            f = open(self.path + filename, "w")
-            f.write(data)
-            f.close()
-            return ("File written successfully!!\n")
+            return "File doesn't exist!!\n"
 
-
+    def __exit__(self, *err):
+        self.close()
 
