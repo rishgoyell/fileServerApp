@@ -26,7 +26,7 @@ def get_option(clientsocket):
 def sign_in(clientsocket):
    curruser = user.user(clientsocket)
    try:
-      clientsocket.mysend('Enter Username:Password')
+      clientsocket.mysend('Enter Username:Password\n')
    except Exception as e:
       raise e
    try:
@@ -35,7 +35,7 @@ def sign_in(clientsocket):
       raise e
 
    if creds.count(':') != 1:
-      clientsocket.mysend('Information not provided in appropriate form')
+      clientsocket.mysend('Information not provided in appropriate form\n')
       return False
 
    l = creds.strip('\n').split(':')
@@ -74,14 +74,19 @@ def sign_up(clientsocket):
 
 def get_next_action(curruser):
    try:
-      clientsocket.mysend('Enter [1] List Files\n[2] Write File\n[3] Read File\n[4] Delete File\n[5] Exit')
+      clientsocket.mysend('Enter Desired Option or [0] for HELP\n')
    except Exception as e:
       raise e
    try:
       option = clientsocket.myreceive()
    except Exception as e:
       raise e
-
+   if option == '0':
+      try:
+         clientsocket.mysend('Enter \n[0] HELP \n[1] List Files\n[2] Write File\n[3] Read File\n[4] Delete File\n[5] Exit\n')
+      except Exception as e:
+         raise e
+      return True
    if option == '1':
       try:
          clientsocket.mysend(curruser.ls())
@@ -142,6 +147,10 @@ def get_next_action(curruser):
       return True
 
    if option == '5':
+      try:
+         clientsocket.mysend("Closing Connection...\n")
+      except Exception as e:
+         raise e
       return False
 
 class mysocket(object):
@@ -197,7 +206,7 @@ class mysocket(object):
       while bytes_recd < MSGLEN:
          chunk = self.sock.recv(min(MSGLEN - bytes_recd, 2048))
          if chunk == '':
-            raise RuntimeError("socket connection broken")
+            raise RuntimeError("socket connection broken\n")
          chunks.append(chunk)
          bytes_recd = bytes_recd + len(chunk)
       return ''.join(chunks)
