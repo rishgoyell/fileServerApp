@@ -33,9 +33,7 @@ def sign_in(clientsocket):
    except Exception as e:
       raise e
    try:
-      # print "accepting creds"
       creds = clientsocket.myreceive()
-      # print "accepted creds"
    except Exception as e:
       raise e
 
@@ -166,9 +164,9 @@ while True:
    elif newpid==0 :
       flag = 1
       while True:
-
          while True:
             option = get_option(clientsocket)
+
             if option == '1':
                if sign_up():
                   break
