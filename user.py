@@ -4,12 +4,16 @@ from server import mysocket
 
 class user:
 
-    def __init__(self, name, passwd, sock):
+    def __init__(self, name=None, passwd=None, sock):
         self.name = name
         self.pwd = passwd
         self.path = ""
         self.logged_in = False
         self.sock = sock
+
+    def update_cred(self, name, passwd):
+        self.name = name
+        self.pwd = passwd
 
     def login(self):
         if "Invalid" in auth.login(self.name, self.pwd):
