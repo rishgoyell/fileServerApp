@@ -83,7 +83,7 @@ def get_next_action(curruser):
       raise e
    if option == '0':
       try:
-         clientsocket.mysend('Enter \n[0] HELP \n[1] List All Files\n[2] Write File\n[3] Read File \n[4] Delete File\n[5] Give Access\n[6] Revoke Access\n[7] Files Shared with Others\n[8] Exit\n')
+         clientsocket.mysend('Enter \n[0] HELP \n[1] List All Files\n[2] Upload File\n[3] Download File \n[4] Delete File\n[5] Give Access\n[6] Revoke Access\n[7] Files Shared with Others\n[8] Exit\n')
       except Exception as e:
          raise e
       return True
@@ -205,7 +205,7 @@ class mysocket(object):
 
 
    def bind(self, port):
-      self.sock.bind((socket.gethostname(), port))
+      self.sock.bind(('172.27.27.97', port))
 
 
    def connect(self, host, port):
@@ -255,7 +255,7 @@ class mysocket(object):
 serversocket = mysocket()       
 print "Socket successfully created"
 
-port = 12345               
+port = 12345              
 
 serversocket.bind(port)     
 print "socket binded to %s" %(port)

@@ -60,8 +60,8 @@ class mysocket(object):
 
 s = mysocket()
 port = 12345               
- 
-s.connect('127.0.0.1',port)
+ip_address = raw_input("Please type the ip address to connect to, and then press enter\n")
+s.connect(ip_address,port)
 while True:
 	option = 0
 	option_msg = s.myreceive()
@@ -114,6 +114,7 @@ while True:
 			print "File doesn't exist!!\n"
 	elif option == '3':
 		filename = raw_input()
+		filename = os.path.basename(filename)
 		s.mysend(filename)
 		filedata = s.myreceive()
 		if "File doesn't exist!!\n" == filedata:
@@ -125,6 +126,7 @@ while True:
 
 	elif option == '4':
 		filename = raw_input()
+		filename = os.path.basename(filename)
 		s.mysend(filename)
 		print s.myreceive()
 
