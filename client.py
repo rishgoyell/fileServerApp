@@ -1,5 +1,5 @@
 import socket
-import getpass         
+import getpass
 import os
 class mysocket(object):
 
@@ -59,7 +59,7 @@ class mysocket(object):
 		return ''.join(chunks)
 
 s = mysocket()
-port = 12345               
+port = 12345
 ip_address = raw_input("Please type the ip address to connect to, and then press enter\n")
 s.connect(ip_address,port)
 while True:
@@ -123,6 +123,7 @@ while True:
 			with open(filename, 'w') as outfile:
 				outfile.write(filedata)
 			print("File Transferred!!")
+                        print filedata
 
 	elif option == '4':
 		filename = raw_input()
@@ -150,4 +151,4 @@ while True:
 		s.close()
 
 s.close()
-       
+

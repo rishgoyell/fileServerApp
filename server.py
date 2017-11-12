@@ -1,4 +1,4 @@
-import socket               
+import socket
 import os
 import sys
 import time
@@ -15,7 +15,7 @@ def get_option(clientsocket):
    except Exception as e:
       raise e
    # while option not in ['1','2']:
-      
+
    #    try:
    #       option = clientsocket.myreceive()
    #    except Exception as e:
@@ -83,7 +83,7 @@ def get_next_action(curruser):
       raise e
    if option == '0':
       try:
-         clientsocket.mysend('Enter \n[0] HELP \n[1] List All Files\n[2] Upload File\n[3] Download File \n[4] Delete File\n[5] Give Access\n[6] Revoke Access\n[7] Files Shared with Others\n[8] Exit\n')
+         clientsocket.mysend('Enter \n[0] HELP \n[1] List Files\n[2] Upload File\n[3] Download File \n[4] Delete File\n[5] Give Access\n[6] Revoke Access\n[7] Shared Files\n[8] Exit\n')
       except Exception as e:
          raise e
       return True
@@ -93,7 +93,7 @@ def get_next_action(curruser):
       except Exception as e:
          raise e
       return True
-         
+
    if option == '2':
       try:
          clientsocket.mysend("Enter File Name\n")
@@ -128,12 +128,18 @@ def get_next_action(curruser):
       filedata = curruser.readfile(filename)
       if "File doesn't exist!!\n" == filedata:
          filedata = curruser.shared_read(filename)
-      try:
-         clientsocket.mysend(filedata)
-      except Exception as e:
-         raise e
+         if "File is not shared with you!!\n" == filedata:
+            try:
+                clientsocket.mysend("File doesn't exist!!\n")
+            except Exception as e:
+                raise e
+         else:
+            try:
+               clientsocket.mysend(filedata)
+            except Exception as e:
+               raise e
       return True
-      
+
    if option == '4':
       try:
          clientsocket.mysend("Enter File Name\n")
@@ -205,7 +211,7 @@ class mysocket(object):
 
 
    def bind(self, port):
-      self.sock.bind(('172.27.27.97', port))
+      self.sock.bind((sys.argv[1], port))
 
 
    def connect(self, host, port):
@@ -251,21 +257,22 @@ class mysocket(object):
          bytes_recd = bytes_recd + len(chunk)
       return ''.join(chunks)
 
-
-serversocket = mysocket()       
+if len(sys.argv) != 2:
+    print "Insufficient arguments"
+serversocket = mysocket()
 print "Socket successfully created"
 
-port = 12345              
+port = 12345
 
-serversocket.bind(port)     
-print "socket binded to %s" %(port)
- 
-serversocket.listen(5)     
-print "socket is listening"           
- 
+serversocket.bind(port)
+print "socket bound to %s" %(port)
+
+serversocket.listen(5)
+print "socket is listening"
+
 while True:
- 
-   clientsocket, addr = serversocket.accept()     
+
+   clientsocket, addr = serversocket.accept()
    print 'Got connection from', addr
    newpid = os.fork()
    if newpid<0 :
@@ -279,7 +286,7 @@ while True:
 
          if option == '1':
             sign_up(clientsocket)
-               
+
          if option == '2':
             curruser = sign_in(clientsocket)
             if curruser:
