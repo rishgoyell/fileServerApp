@@ -40,49 +40,49 @@ thus allowing concurrent access.
 
 ![State Diagram depicting the sequences of possible actions once the
 client-server connection is established.](stateDiagram.png "fig:")
-[fig:my~l~abel]
 
-Figure [fig:my~l~abel] shows the state diagram which explains the
+
+The figure shows the state diagram which explains the
 possible sequences of actions that can take place once the connection is
 established. Once authentication is done by the server, it provides a
 list of options to the client. The user can provide the number
 corresponding to the command he/she wants to execute.
 
-1.  **HELP: **Shows the mapping between the commands and the option
+1.  **HELP:**  Shows the mapping between the commands and the option
     number.
 
-2.  **List Files: **Shows all the files that a user has uploaded on the
+2.  **List Files:** Shows all the files that a user has uploaded on the
     server. Also shows the files that other users have shared with a
     particular user.
 
-3.  **Upload File: **Asks for file address to upload on the server and
+3.  **Upload File:** Asks for file address to upload on the server and
     if that file exists, it will upload it in the users directory on the
     server with the same name. Before uploading the file, server also
     checks if some file with same name exists, if yes then it will
     create a file with same name appended with a number (filename\_num)
     and transfer the data into it.
 
-4.  **Download File: **Asks for file name to download from the server.
+4.  **Download File:** Asks for file name to download from the server.
     If the file does not exists on the server, it will check if it is
     shared and send “File doesn’t exists!!” if it doesn’t.
 
-5.  **Delete File: **Asks for a file name to delete from the server.
+5.  **Delete File:** Asks for a file name to delete from the server.
     Only delete if the file name exists in the user directory.
 
-6.  **Give Access: **Asks for a file name and the username to whom
+6.  **Give Access:** Asks for a file name and the username to whom
     access will be given. If either of the user or the file does not
     exist then it will show the error, otherwise it will share the given
     file with the given user.
 
-7.  **Revoke Access: **Asks for a file name and the username from whom
+7.  **Revoke Access:** Asks for a file name and the username from whom
     access of the file will be revoked. If either of the user or the
     file does not exist then it will show the error, otherwise it will
     revoke the access of the given file from the given user.
 
-8.  **List Shared Files: **Lists all the files that a user has shared
+8.  **List Shared Files:** Lists all the files that a user has shared
     with other users.
 
-9.  **Exit: **Logs the user out of the application.
+9.  **Exit:** Logs the user out of the application.
 
 Implementation
 ==============
